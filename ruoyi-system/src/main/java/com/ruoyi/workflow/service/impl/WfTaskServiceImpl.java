@@ -103,6 +103,7 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
 
     /**
      * 拒绝任务
+     * 说明：等同于驳回任务/终止流程
      *
      * @param taskBo
      */
@@ -366,7 +367,7 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
         identityService.setAuthenticatedUserId(TaskUtils.getUserId());
         // 添加审批意见
         taskService.addComment(bo.getTaskId(), task.getProcessInstanceId(), FlowComment.TRANSFER.getType(), commentBuilder.toString());
-        // 设置拥有者为当前登录人
+        // 设置拥有者为当前登录人 //add by me 我这边有个疑问：转办任务是不是不需要设置所有者？
         taskService.setOwner(bo.getTaskId(), TaskUtils.getUserId());
         // 转办任务
         taskService.setAssignee(bo.getTaskId(), bo.getUserId());
