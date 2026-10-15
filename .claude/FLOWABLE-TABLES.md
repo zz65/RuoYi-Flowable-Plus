@@ -15,7 +15,7 @@
 | `ACT_GE_*` | 2 | Process（通用） | ✅ 自动创建 |
 | `ACT_RE_*` | 3 | Process（仓库） | ✅ 自动创建 |
 | `ACT_RU_*` | 13 | Process（运行时） | ✅ 自动创建 |
-| `ACT_HI_*` | 10 | Process（历史） | ✅ 自动创建 |
+| `ACT_HI_*` | 10 | Process（审计） | ✅ 自动创建 |
 | `ACT_PROCDEF_INFO` / `ACT_EVT_LOG` | 2 | Process（辅助） | ✅ 自动创建（`ACT_EVT_LOG` 默认不记录） |
 | `ACT_ID_*` | 9 | IDM（身份管理） | ❌ `flowable.idm.enabled: false`，不创建 |
 | `FLW_*` | 8 | 事件注册引擎 + 批量服务 | ❌ 未引入事件注册引擎；批量表随 Process 引擎 |
@@ -57,19 +57,21 @@
 | `ACT_RU_EXTERNAL_JOB` | 外部 Worker 作业 |
 | `ACT_RU_ENTITYLINK` | 运行时实体引用（如流程实例与模型/任务的关联） |
 
-### 历史（History）
+### 审计（History）
+
+> 官方命名为 History，但 `ACT_HI_*` 自流程实例启动即写入并持续更新（含运行中的实例/任务），不止于"已结束的历史"，语义上是一条贯穿全生命周期的**审计轨迹**，故本文称其为审计表。
 
 | 表名 | 用途 |
 | --- | --- |
-| `ACT_HI_PROCINST` | 历史流程实例（已结束/运行中实例轨迹） |
-| `ACT_HI_ACTINST` | 历史活动实例（节点流转轨迹） |
-| `ACT_HI_TASKINST` | 历史任务实例（已办记录，已办列表来源） |
-| `ACT_HI_VARINST` | 历史流程变量 |
-| `ACT_HI_DETAIL` | 历史详情（变量变更明细） |
-| `ACT_HI_COMMENT` | 历史意见/评论（审批意见，对应 `FlowComment`） |
-| `ACT_HI_ATTACHMENT` | 历史附件 |
-| `ACT_HI_IDENTITYLINK` | 历史参与者关联 |
-| `ACT_HI_ENTITYLINK` | 历史实体引用 |
+| `ACT_HI_PROCINST` | 审计流程实例（启动即写入，含运行中与已结束实例轨迹） |
+| `ACT_HI_ACTINST` | 审计活动实例（节点流转轨迹） |
+| `ACT_HI_TASKINST` | 审计任务实例（任务创建即写入，含运行中任务；已办列表来源） |
+| `ACT_HI_VARINST` | 审计流程变量 |
+| `ACT_HI_DETAIL` | 审计详情（变量变更明细） |
+| `ACT_HI_COMMENT` | 审计意见/评论（审批意见，对应 `FlowComment`） |
+| `ACT_HI_ATTACHMENT` | 审计附件 |
+| `ACT_HI_IDENTITYLINK` | 审计参与者关联 |
+| `ACT_HI_ENTITYLINK` | 审计实体引用 |
 | `ACT_HI_TSK_LOG` | 任务日志 |
 
 ### 辅助
@@ -114,14 +116,14 @@
 
 ## 与 RuoYi 自定义表的配合
 
-Flowable 自带的 `act_*`/`flw_*` 表只承载「引擎机制」（部署、定义、运行/历史实例、任务、变量、作业），而 RuoYi 业务层额外维护了 `wf_*` 自定义表承载业务信息：
+Flowable 自带的 `act_*`/`flw_*` 表只承载「引擎机制」（部署、定义、运行/审计实例、任务、变量、作业），而 RuoYi 业务层额外维护了 `wf_*` 自定义表承载业务信息：
 
 - `wf_category` —— 流程分类
 - `wf_form` —— 在线表单定义
 - `wf_copy` —— 抄送记录
 - `wf_deploy_form` —— 部署/节点与表单的快照关联
 
-三层数据关系（以「发起一个流程」为例）：`ACT_RE_PROCDEF`（定义）→ `ACT_RU_PROCINST/EXECUTION/TASK`（运行）→ 结束时写入 `ACT_HI_*`（历史）；`wf_form`/`wf_deploy_form` 在部署阶段由业务代码写入；`wf_copy` 在抄送时写入。详见 [WORKFLOW.md](WORKFLOW.md) 的「数据模型」一节。
+三层数据关系（以「发起一个流程」为例）：`ACT_RE_PROCDEF`（定义）→ `ACT_RU_PROCINST/EXECUTION/TASK`（运行）→ `ACT_HI_*`（审计）自流程发起即写入并全程跟踪至结束；`wf_form`/`wf_deploy_form` 在部署阶段由业务代码写入；`wf_copy` 在抄送时写入。详见 [WORKFLOW.md](WORKFLOW.md) 的「数据模型」一节。
 
 ## 专题文档（惰性加载，需要时读取）
 L@WORKFLOW.md

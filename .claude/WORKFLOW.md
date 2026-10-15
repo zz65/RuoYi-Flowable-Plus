@@ -59,7 +59,7 @@
 - `IdentityService`（用户/组）
 - `TaskService`（任务）
 - `FormService`（表单）
-- `HistoryService`（历史）
+- `HistoryService`（审计）
 - `ManagementService`（引擎管理）
 - `ProcessEngine`（`@Qualifier("processEngine")`）
 
@@ -116,7 +116,7 @@
 
 - [`ACT_RE_MODEL` / `ACT_RE_DEPLOYMENT` / `ACT_RE_PROCDEF`](FLOWABLE-TABLES.md) —— 模型、部署、流程定义（`IWfModelService` 直接操作 `ModelService`）
 - [`ACT_RU_TASK` / `ACT_RU_EXECUTION` / `ACT_RU_VARIABLE`](FLOWABLE-TABLES.md) —— 运行中任务/执行/变量
-- [`ACT_HI_*`](FLOWABLE-TABLES.md) —— 历史（`IWfProcessService` 的已办列表主要查历史）
+- [`ACT_HI_*`](FLOWABLE-TABLES.md) —— 审计轨迹（启动即写入，含运行中与已结束数据；`IWfProcessService` 的已办列表主要查 `ACT_HI_TASKINST`）
 
 > 注意：`IWfModelService` 管理的是 Flowable 的 Model（`ACT_RE_MODEL`），**没有** `wf_model` 自定义表；`WfModelVo` 只是 VO。
 
